@@ -41,7 +41,7 @@ export class ApiGatewayStack extends cdk.Stack {
         callbackUrls: [callbackUrl]
       },
     });
-    const userPoolClientId = userPoolClient.userPoolClientId;
+    const clientId = userPoolClient.userPoolClientId;
 
     /** Custom domain to the Cognito User Pool. */
     const userPoolDomain = userPool.addDomain("UserPoolDomain", {
@@ -75,7 +75,7 @@ export class ApiGatewayStack extends cdk.Stack {
       entryFileName: 'callback',
       environment: {
         TOKEN_ENDPOINT: `${userPoolDomain.baseUrl()}/oauth2/token`,
-        CLIENT_ID: userPoolClientId,
+        CLIENT_ID: clientId,
         REDIRECT_URI: callbackUrl,
       }
     });
@@ -85,7 +85,7 @@ export class ApiGatewayStack extends cdk.Stack {
       entryFileName: 'authorizer',
       environment: {
         USER_POOL_ID: userPoolId,
-        CLIENT_ID: userPoolClientId,
+        CLIENT_ID: clientId,
       }
     });
   };
