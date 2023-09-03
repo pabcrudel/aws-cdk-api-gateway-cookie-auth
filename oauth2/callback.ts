@@ -40,7 +40,7 @@ export const handler: RequestFunction = async (event) => {
                 // The Location header tells the browser it should redirect to the root of the URL
                 Location: "/",
                 // The Set-Cookie header tells the browser to persist the access token in the cookie store
-                "Set-Cookie": `accessToken=${cognitoJsonWebToken}; Secure; HttpOnly; SameSite=Lax; Path=/`,
+                "Set-Cookie": `cognitoAccessToken=${cognitoJsonWebToken}; Secure; HttpOnly; SameSite=Lax; Path=/`,
             },
         };
     }
