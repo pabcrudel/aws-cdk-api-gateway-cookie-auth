@@ -3,7 +3,7 @@ import * as qs from "qs";
 import { RequestFunction } from "./types";
 import { ApiErrorResponse, BadRequestError, ServerError } from "./utils";
 
-export const callback: RequestFunction = async (event) => {
+export const handler: RequestFunction = async (event) => {
     try {
         const queryStringParams = event.queryStringParameters;
         if (queryStringParams === null) throw new BadRequestError("Empty Query String Params");
