@@ -25,5 +25,11 @@ export class ApiGatewayStack extends cdk.Stack {
       },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
+
+    /** 
+     * This callback URL is used to redirect the user to the protected Api 
+     * after they have authenticated with the Cognito User Pool.
+    */
+    const callbackUrl = restApi.url + "/oauth2/callback";
   };
 };
