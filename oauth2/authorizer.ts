@@ -1,16 +1,19 @@
 import { CognitoJwtVerifier } from "aws-jwt-verify";
 import { GetAccessTokenFromCookies } from "./types";
+import { RequestFunction } from "./types";
 import { ApiErrorResponse, BadRequestError, ServerError } from "./utils";
 
 const getAccessTokenFromCookies: GetAccessTokenFromCookies = (cookies) => {
-    let accessToken = null;
+    let accessToken = undefined;
 
-    let lock = true;
-    for (let i = 0; lock && i < cookies.length; i++) {
-        const [name, value] = cookies[i].split("=");
-        if (name === 'cognitoAccessToken') {
-            accessToken = value;
-            lock = false;
+    if (cookies !== undefined) {
+        let lock = true;
+        for (let i = 0; lock && i < cookies.length; i++) {
+            const [name, value] = cookies[i].split("=");
+            if (name === 'cognitoAccessToken') {
+                accessToken = value;
+                lock = false;
+            };
         };
     };
 
@@ -28,3 +31,17 @@ const verifier = CognitoJwtVerifier.create({
     tokenUse: "access",
     clientId: clientId,
 });
+
+export const handler: RequestFunction = async (event) => {
+    try {
+        const accessToken = getAccessTokenFromCookies(event.headers['Cookie']);
+        if (accessToken === undefined) throw new BadRequestError("Could not find the Cognito Access Token Cookie");
+
+        await verifier.verify(accessToken);
+
+        return { isAuthorized: true };
+    }
+    catch (error) {
+        return new ApiErrorResponse(error);
+    };
+};

@@ -5,5 +5,5 @@ export interface RequestFunction {
 }
 
 export interface GetAccessTokenFromCookies {
-    (cookies: string): string | null
+    (cookies: string | undefined): string | undefined
 }
