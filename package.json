@@ -23,6 +23,7 @@
   "dependencies": {
     "@types/aws-lambda": "^8.10.119",
     "aws-cdk-lib": "2.94.0",
+    "aws-jwt-verify": "^4.0.0",
     "axios": "^1.5.0",
     "constructs": "^10.0.0",
     "qs": "^6.11.2",
