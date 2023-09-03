@@ -3,6 +3,7 @@ import * as apiGateway from 'aws-cdk-lib/aws-apigateway';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
+import { LambdaNodeFunction } from './constructs/lambda-function';
 
 export class ApiGatewayStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -65,6 +66,13 @@ export class ApiGatewayStack extends cdk.Stack {
           }; 
         };
       `),
+    });
+
+    /** Lambda function `oAuth2Callback` is responsible for issuing and persisting the OAuth2 access tokens */
+    const oAuth2CallbackFunction = new LambdaNodeFunction(this, 'oAuth2Callback', 'oAuth2Callback', 'callback', {
+      TOKEN_ENDPOINT: `${userPoolDomain.baseUrl()}/oauth2/token`,
+      CLIENT_ID: userPoolClient.userPoolClientId,
+      REDIRECT_URI: callbackUrl,
     });
   };
 };
