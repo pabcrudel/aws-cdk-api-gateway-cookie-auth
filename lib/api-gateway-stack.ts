@@ -1,8 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import * as apiGateway from 'aws-cdk-lib/aws-apigateway';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
-import { randomUUID } from "crypto";
 
 export class ApiGatewayStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -50,6 +50,21 @@ export class ApiGatewayStack extends cdk.Stack {
     /** URL that users can use to sign in to the Cognito User Pool. */
     const signInUrl = userPoolDomain.signInUrl(userPoolClient, {
       redirectUri: callbackUrl, // must be a URL configured under 'callbackUrls' with the 'userPoolClient'
+    });
+
+    /** This function will handle requests to a protected resource in the API Gateway. */
+    const protectedResourceLambdaFunction = new lambda.Function(this, 'ProtectedCookieAuthFunction', {
+      functionName: 'ProtectedCookieAuthFunction',
+      handler: "index.handler",
+      runtime: lambda.Runtime.NODEJS_16_X,
+      code: new lambda.InlineCode(`
+        exports.handler = async () => {
+          return {
+            statusCode: 200,
+            body: JSON.stringify("Hello from Protected Lambda!"),
+          }; 
+        };
+      `),
     });
   };
 };
