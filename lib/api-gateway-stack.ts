@@ -31,5 +31,12 @@ export class ApiGatewayStack extends cdk.Stack {
      * after they have authenticated with the Cognito User Pool.
     */
     const callbackUrl = restApi.url + "/oauth2/callback";
+
+    /** A user pool client application that can interact with the user pool. */
+    const userPoolClient = userPool.addClient('AppClient', {
+      oAuth: {
+        callbackUrls: [callbackUrl]
+      }
+    });
   };
 };
