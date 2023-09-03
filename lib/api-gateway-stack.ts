@@ -46,5 +46,10 @@ export class ApiGatewayStack extends cdk.Stack {
         domainPrefix: "cookie-auth",
       },
     });
+
+    /** URL that users can use to sign in to the Cognito User Pool. */
+    const signInUrl = userPoolDomain.signInUrl(userPoolClient, {
+      redirectUri: callbackUrl, // must be a URL configured under 'callbackUrls' with the 'userPoolClient'
+    });
   };
 };
