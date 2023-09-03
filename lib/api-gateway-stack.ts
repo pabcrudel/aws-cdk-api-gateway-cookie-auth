@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as apiGateway from 'aws-cdk-lib/aws-apigateway';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { Construct } from 'constructs';
+import { randomUUID } from "crypto";
 
 export class ApiGatewayStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -13,7 +14,7 @@ export class ApiGatewayStack extends cdk.Stack {
     });
 
     /** Cognito User Pool*/
-    const userPool = new cognito.UserPool(this, 'UserPool', {
+    const userPool = new cognito.UserPool(this, 'CookieAuthUserPool', {
       selfSignUpEnabled: true,
       passwordPolicy: {
         minLength: 10,
@@ -33,10 +34,17 @@ export class ApiGatewayStack extends cdk.Stack {
     const callbackUrl = restApi.url + "/oauth2/callback";
 
     /** A user pool client application that can interact with the user pool. */
-    const userPoolClient = userPool.addClient('AppClient', {
+    const userPoolClient = userPool.addClient('CookieAuthAppClient', {
       oAuth: {
         callbackUrls: [callbackUrl]
-      }
+      },
+    });
+
+    /** Custom domain to the Cognito User Pool. */
+    const userPoolDomain = userPool.addDomain("UserPoolDomain", {
+      cognitoDomain: {
+        domainPrefix: "cookie-auth",
+      },
     });
   };
 };
