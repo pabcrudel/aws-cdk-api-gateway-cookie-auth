@@ -27,6 +27,7 @@ export class ApiGatewayStack extends cdk.Stack {
       },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
+    const userPoolId = userPool.userPoolId;
 
     /** 
      * This callback URL is used to redirect the user to the protected Api 
@@ -40,6 +41,7 @@ export class ApiGatewayStack extends cdk.Stack {
         callbackUrls: [callbackUrl]
       },
     });
+    const userPoolClientId = userPoolClient.userPoolClientId;
 
     /** Custom domain to the Cognito User Pool. */
     const userPoolDomain = userPool.addDomain("UserPoolDomain", {
@@ -69,12 +71,21 @@ export class ApiGatewayStack extends cdk.Stack {
     });
 
     /** Lambda function `oAuth2CallbackFunction` is responsible for issuing and persisting the OAuth2 access tokens */
-    const oAuth2CallbackFunction = new LambdaNodeFunction(this, 'oAuth2Callback', {
+    const oAuth2CallbackFunction = new LambdaNodeFunction(this, 'oAuth2CallbackFunction', {
       entryFileName: 'callback',
       environment: {
         TOKEN_ENDPOINT: `${userPoolDomain.baseUrl()}/oauth2/token`,
-        CLIENT_ID: userPoolClient.userPoolClientId,
+        CLIENT_ID: userPoolClientId,
         REDIRECT_URI: callbackUrl,
+      }
+    });
+
+    /** Lambda function `oAuth2AuthorizerFunction` checks that requests are authenticated */
+    const oAuth2AuthorizerFunction = new LambdaNodeFunction(this, 'oAuth2AuthorizerFunction', {
+      entryFileName: 'authorizer',
+      environment: {
+        USER_POOL_ID: userPoolId,
+        CLIENT_ID: userPoolClientId,
       }
     });
   };
