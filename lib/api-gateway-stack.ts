@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as apiGateway from 'aws-cdk-lib/aws-apigateway';
+import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { Construct } from 'constructs';
 
 export class ApiGatewayStack extends cdk.Stack {
@@ -9,6 +10,20 @@ export class ApiGatewayStack extends cdk.Stack {
     /** Rest Api to communicate frontend with the backend */
     const restApi = new apiGateway.RestApi(this, "CookieAuthRestApi", {
       deploy: true,
+    });
+
+    /** Cognito User Pool*/
+    const userPool = new cognito.UserPool(this, 'UserPool', {
+      selfSignUpEnabled: true,
+      passwordPolicy: {
+        minLength: 10,
+        requireLowercase: true,
+        requireUppercase: true,
+        requireDigits: true,
+        requireSymbols: true,
+        tempPasswordValidity: cdk.Duration.days(3),
+      },
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
   };
 };
