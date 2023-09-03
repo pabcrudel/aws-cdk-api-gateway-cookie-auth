@@ -88,5 +88,17 @@ export class ApiGatewayStack extends cdk.Stack {
         CLIENT_ID: clientId,
       }
     });
+
+    const authorizer = new apiGateway.RequestAuthorizer(this, 'LambdaAuthorizer', {
+      handler: oAuth2AuthorizerFunction,
+      identitySources: [apiGateway.IdentitySource.header('Authorization')]
+    });
+
+    restApi.root.addMethod('GET', new apiGateway.LambdaIntegration(protectedResourceLambdaFunction), {
+      authorizationType: apiGateway.AuthorizationType.CUSTOM,
+      authorizer: authorizer
+    });
+
+    restApi.root.addResource("/oauth2/callback").addMethod('GET', new apiGateway.LambdaIntegration(oAuth2CallbackFunction))
   };
 };
