@@ -32,15 +32,6 @@ export class ApiGatewayStack extends cdk.Stack {
     const userPoolClient = userPool.addClient('CookieAuthAppClient');
     const clientId = userPoolClient.userPoolClientId;
 
-    /** Domain to the Cognito User Pool Auth and Registration manager */
-    const userPoolDomain = userPool.addDomain('UserPoolDomain', {
-      cognitoDomain: { domainPrefix: 'cookie-auth' }
-    });
-    new cdk.CfnOutput(this, 'UserPoolURL', {
-      value: userPoolDomain.baseUrl(),
-      description: 'The URL to manage Auth and Registration to Cognito'
-    })
-
     /** This function will handle requests to a protected resource in the API Gateway. */
     const protectedResourceLambdaFunction = new LambdaNodeFunction(this, 'ProtectedCookieAuthFunction', { entryFileName: 'protectedResource' });
 
