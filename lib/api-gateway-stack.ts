@@ -29,31 +29,20 @@ export class ApiGatewayStack extends cdk.Stack {
     });
     const userPoolId = userPool.userPoolId;
 
+    
     /** A user pool client application that can interact with the user pool. */
     const userPoolClient = userPool.addClient('CookieAuthAppClient');
     const clientId = userPoolClient.userPoolClientId;
-
-    /** Custom domain to the Cognito User Pool. */
-    const userPoolDomain = userPool.addDomain("UserPoolDomain", {
-      cognitoDomain: {
-        domainPrefix: "cookie-auth",
-      },
-    });
+    
+    /** Domain to the Cognito User Pool Auth and Registration manager */
+    const userPoolDomain = new cognito.UserPoolDomain(this, 'UserPoolDomain', { userPool: userPool });
+    new cdk.CfnOutput(this, 'UserPoolURL', {
+      value: userPoolDomain.baseUrl(),
+      description: 'The URL to manage Auth and Registration to Cognito'
+    })
 
     /** This function will handle requests to a protected resource in the API Gateway. */
-    const protectedResourceLambdaFunction = new lambda.Function(this, 'ProtectedCookieAuthFunction', {
-      functionName: 'ProtectedCookieAuthFunction',
-      handler: "index.handler",
-      runtime: lambda.Runtime.NODEJS_16_X,
-      code: new lambda.InlineCode(`
-        exports.handler = async () => {
-          return {
-            statusCode: 200,
-            body: JSON.stringify("Hello from Protected Lambda!"),
-          }; 
-        };
-      `),
-    });
+    const protectedResourceLambdaFunction = new LambdaNodeFunction(this, 'ProtectedCookieAuthFunction', { entryFileName: 'protectedResource' });
 
     /** Lambda function `oAuth2CallbackFunction` is responsible for issuing and persisting the OAuth2 access tokens */
     const oAuth2CallbackFunction = new LambdaNodeFunction(this, 'oAuth2CallbackFunction', {
