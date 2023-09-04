@@ -1,7 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as apiGateway from 'aws-cdk-lib/aws-apigateway';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 import { LambdaNodeFunction } from './constructs/lambda-node-function';
 
@@ -28,7 +27,6 @@ export class ApiGatewayStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     const userPoolId = userPool.userPoolId;
-
     
     /** A user pool client application that can interact with the user pool. */
     const userPoolClient = userPool.addClient('CookieAuthAppClient');
@@ -44,34 +42,6 @@ export class ApiGatewayStack extends cdk.Stack {
     /** This function will handle requests to a protected resource in the API Gateway. */
     const protectedResourceLambdaFunction = new LambdaNodeFunction(this, 'ProtectedCookieAuthFunction', { entryFileName: 'protectedResource' });
 
-    /** Lambda function `oAuth2CallbackFunction` is responsible for issuing and persisting the OAuth2 access tokens */
-    const oAuth2CallbackFunction = new LambdaNodeFunction(this, 'oAuth2CallbackFunction', {
-      entryFileName: 'callback',
-      environment: {
-        TOKEN_ENDPOINT: `${userPoolDomain.baseUrl()}/oauth2/token`,
-        CLIENT_ID: clientId,
-      }
-    });
-
-    /** Lambda function `oAuth2AuthorizerFunction` checks that requests are authenticated */
-    const oAuth2AuthorizerFunction = new LambdaNodeFunction(this, 'oAuth2AuthorizerFunction', {
-      entryFileName: 'authorizer',
-      environment: {
-        USER_POOL_ID: userPoolId,
-        CLIENT_ID: clientId,
-      }
-    });
-
-    const authorizer = new apiGateway.RequestAuthorizer(this, 'LambdaAuthorizer', {
-      handler: oAuth2AuthorizerFunction,
-      identitySources: [apiGateway.IdentitySource.header('Authorization')]
-    });
-
-    restApi.root.addMethod('GET', new apiGateway.LambdaIntegration(protectedResourceLambdaFunction), {
-      authorizationType: apiGateway.AuthorizationType.CUSTOM,
-      authorizer: authorizer
-    });
-
-    restApi.root.addResource("oauth2").addMethod('GET', new apiGateway.LambdaIntegration(oAuth2CallbackFunction))
+    restApi.root.addMethod('GET', new apiGateway.LambdaIntegration(protectedResourceLambdaFunction));
   };
 };
