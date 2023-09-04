@@ -11,7 +11,7 @@ interface LambdaNodeFunctionProps {
 export class LambdaNodeFunction extends lambdaNode.NodejsFunction {
     constructor(scope: Construct, functionName: string, props: LambdaNodeFunctionProps) {
         super(scope, functionName, {
-            entry: `oauth2/${props.entryFileName}.ts`,
+            entry: `backend/${props.entryFileName}.ts`,
             handler: 'handler',
             runtime: lambda.Runtime.NODEJS_18_X,
             environment: props.environment,
