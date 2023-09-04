@@ -4,7 +4,7 @@ import { Construct } from 'constructs';
 
 interface LambdaNodeFunctionProps {
     readonly entryFileName: string;
-    readonly environment: { [key: string]: string }
+    readonly environment?: { [key: string]: string }
 };
 
 /** Creates a `lambdaNode.NodejsFunction` */
