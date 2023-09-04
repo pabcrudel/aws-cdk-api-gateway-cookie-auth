@@ -29,18 +29,8 @@ export class ApiGatewayStack extends cdk.Stack {
     });
     const userPoolId = userPool.userPoolId;
 
-    /** 
-     * This callback URL is used to redirect the user to the protected Api 
-     * after they have authenticated with the Cognito User Pool.
-    */
-    const callbackUrl = restApi.url + "/oauth2";
-
     /** A user pool client application that can interact with the user pool. */
-    const userPoolClient = userPool.addClient('CookieAuthAppClient', {
-      oAuth: {
-        callbackUrls: [callbackUrl]
-      },
-    });
+    const userPoolClient = userPool.addClient('CookieAuthAppClient');
     const clientId = userPoolClient.userPoolClientId;
 
     /** Custom domain to the Cognito User Pool. */
@@ -48,11 +38,6 @@ export class ApiGatewayStack extends cdk.Stack {
       cognitoDomain: {
         domainPrefix: "cookie-auth",
       },
-    });
-
-    /** URL that users can use to sign in to the Cognito User Pool. */
-    const signInUrl = userPoolDomain.signInUrl(userPoolClient, {
-      redirectUri: callbackUrl, // must be a URL configured under 'callbackUrls' with the 'userPoolClient'
     });
 
     /** This function will handle requests to a protected resource in the API Gateway. */
@@ -76,7 +61,6 @@ export class ApiGatewayStack extends cdk.Stack {
       environment: {
         TOKEN_ENDPOINT: `${userPoolDomain.baseUrl()}/oauth2/token`,
         CLIENT_ID: clientId,
-        REDIRECT_URI: callbackUrl,
       }
     });
 
