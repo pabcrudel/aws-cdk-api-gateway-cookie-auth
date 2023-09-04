@@ -27,13 +27,15 @@ export class ApiGatewayStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
     const userPoolId = userPool.userPoolId;
-    
+
     /** A user pool client application that can interact with the user pool. */
     const userPoolClient = userPool.addClient('CookieAuthAppClient');
     const clientId = userPoolClient.userPoolClientId;
-    
+
     /** Domain to the Cognito User Pool Auth and Registration manager */
-    const userPoolDomain = new cognito.UserPoolDomain(this, 'UserPoolDomain', { userPool: userPool });
+    const userPoolDomain = userPool.addDomain('UserPoolDomain', {
+      cognitoDomain: { domainPrefix: 'cookie-auth' }
+    });
     new cdk.CfnOutput(this, 'UserPoolURL', {
       value: userPoolDomain.baseUrl(),
       description: 'The URL to manage Auth and Registration to Cognito'
