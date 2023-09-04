@@ -35,6 +35,21 @@ export class ApiGatewayStack extends cdk.Stack {
     /** This function will handle requests to a protected resource in the API Gateway. */
     const protectedResourceLambdaFunction = new LambdaNodeFunction(this, 'ProtectedCookieAuthFunction', { entryFileName: 'protectedResource' });
 
+    /** This function will handle sign up request to the Cognito User Pool */
+    const signUp = new LambdaNodeFunction(this, 'CognitoSignUpLambdaFunction', {
+      entryFileName: 'auth',
+      handler: 'signUp',
+      environment: {
+        USER_POOL_REGION: this.region,
+        USER_POOL_CLIENT_ID: clientId,
+      }
+    });
+
     restApi.root.addMethod('GET', new apiGateway.LambdaIntegration(protectedResourceLambdaFunction));
+
+    const authApiResource = restApi.root.addResource('auth');
+    authApiResource
+      .addResource('sign-up')
+      .addMethod('POST', new apiGateway.LambdaIntegration(signUp));
   };
 };

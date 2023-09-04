@@ -21,6 +21,7 @@
     "typescript": "~5.2.2"
   },
   "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.405.0",
     "@types/aws-lambda": "^8.10.119",
     "aws-cdk-lib": "2.94.0",
     "aws-jwt-verify": "^4.0.0",
