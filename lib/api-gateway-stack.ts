@@ -13,6 +13,16 @@ export class ApiGatewayStack extends cdk.Stack {
       deploy: true,
     });
 
+    /** API usage plan that limits the requests per minute, with an initial burst of requests */
+    const usagePlan = restApi.addUsagePlan('CognitoAuthorizerUsagePlan', {
+        throttle: {
+            burstLimit: 20,  // burst requests before apply rateLimit
+            rateLimit: 100, // requests per minute
+        },
+    });
+    // Adds the usage plan to the deployment stage of the Api
+    usagePlan.addApiStage({ stage: restApi.deploymentStage });
+
     /** Cognito User Pool*/
     const userPool = new cognito.UserPool(this, 'CognitoAuthorizerUserPool', {
       selfSignUpEnabled: true,
