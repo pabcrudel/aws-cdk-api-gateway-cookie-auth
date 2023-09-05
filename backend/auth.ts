@@ -3,7 +3,9 @@ import {
     SignUpCommand,
     SignUpCommandInput,
     InitiateAuthCommand,
-    InitiateAuthCommandInput
+    InitiateAuthCommandInput,
+    ConfirmSignUpCommand,
+    ConfirmSignUpCommandInput
 } from '@aws-sdk/client-cognito-identity-provider';
 import { RequestFunction } from "./types";
 import * as utils from "./utils";
@@ -35,6 +37,27 @@ export const signUp: RequestFunction = async (event) => {
         };
 
         const response = await cognito.send(new SignUpCommand(input));
+
+        return new utils.ApiSuccessResponse(response);
+    }
+    catch (error) {
+        return new utils.ApiErrorResponse(error);
+    };
+};
+
+export const confirmSignUp: RequestFunction = async (event) => {
+    try {
+        if (event.body === null) throw new utils.BadRequestError("Empty request body");
+
+        const { username, confirmationCode } = JSON.parse(event.body);
+
+        const input: ConfirmSignUpCommandInput = {
+            ClientId: clientId,
+            Username: username,
+            ConfirmationCode: confirmationCode,
+        };
+
+        const response = await cognito.send(new ConfirmSignUpCommand(input));
 
         return new utils.ApiSuccessResponse(response);
     }
