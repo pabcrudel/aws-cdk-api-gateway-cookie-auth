@@ -40,7 +40,7 @@ export class ApiGatewayStack extends cdk.Stack {
       USER_POOL_CLIENT_ID: clientId,
     };
 
-    ['SignUp', 'ConfirmSignUp', 'SignIn'].forEach(method => {
+    ['SignUp', 'ConfirmSignUp', 'ResendConfirmationCode', 'SignIn'].forEach(method => {
       /** This function will handle `sign up`, `confirm sign up` and `sign in` request to the Cognito User Pool */
       const lambdaFunction = new LambdaNodeFunction(this, `Cognito${method}LambdaFunction`, {
         entryFileName: 'auth',
