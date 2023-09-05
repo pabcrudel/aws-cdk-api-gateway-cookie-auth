@@ -43,7 +43,7 @@ export class ApiGatewayStack extends cdk.Stack {
       /** This function will handle `sign up`, `confirm sign up` and `sign in` request to the Cognito User Pool */
       const lambdaFunction = new LambdaNodeFunction(this, `Cognito${method}LambdaFunction`, {
         entryFileName: 'auth',
-        handler: method.replace(/-([a-z])/g, (_, match) => match), // = signUp, confirmSignUp, signIn
+        handler: method.replace(/^./, (match) => match.toLowerCase()), // = signUp, confirmSignUp, signIn
         environment: environment
       });
 
