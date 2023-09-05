@@ -27,21 +27,25 @@ export class ApiGatewayStack extends cdk.Stack {
     /** This function will handle requests to a protected resource in the API Gateway. */
     const protectedLambdaFunction = new LambdaNodeFunction(this, 'ProtectedLambdaFunction', { entryFileName: 'protectedLambda' });
 
-    /** This function will handle sign up request to the Cognito User Pool */
-    const signUp = new LambdaNodeFunction(this, 'CognitoSignUpLambdaFunction', {
-      entryFileName: 'auth',
-      handler: 'signUp',
-      environment: {
-        USER_POOL_REGION: this.region,
-        USER_POOL_CLIENT_ID: clientId,
-      }
-    });
-
     restApi.root.addMethod('GET', new apiGateway.LambdaIntegration(protectedLambdaFunction));
-
+    
     const authApiResource = restApi.root.addResource('auth');
-    authApiResource
-      .addResource('sign-up')
-      .addMethod('POST', new apiGateway.LambdaIntegration(signUp));
+    for (let i = 0; i < 2; i++) {
+      const action = i === 0 ? 'Up' : 'In';
+
+      /** This function will handle sign up/in request to the Cognito User Pool */
+      const lambdaFunction = new LambdaNodeFunction(this, `CognitoSign${action}LambdaFunction`, {
+        entryFileName: 'auth',
+        handler: `sign${action}`,
+        environment: {
+          USER_POOL_REGION: this.region,
+          USER_POOL_CLIENT_ID: clientId,
+        }
+      });
+
+      authApiResource
+        .addResource(`sign-${action.toLowerCase()}`)
+        .addMethod('POST', new apiGateway.LambdaIntegration(lambdaFunction));
+    };
   };
 };
