@@ -21,7 +21,9 @@ export class ApiGatewayStack extends cdk.Stack {
     });
 
     /** A user pool client application that can interact with the user pool. */
-    const userPoolClient = userPool.addClient('CognitoAuthorizerAppClient');
+    const userPoolClient = userPool.addClient('CognitoAuthorizerAppClient', {
+      authFlows: { userPassword: true },
+    });
     const clientId = userPoolClient.userPoolClientId;
 
     /** This function will handle requests to a protected resource in the API Gateway. */
