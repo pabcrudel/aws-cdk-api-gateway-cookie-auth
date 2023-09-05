@@ -75,7 +75,7 @@ export const signIn: RequestFunction = async (event) => {
         const input: InitiateAuthCommandInput = {
             AuthFlow: 'USER_PASSWORD_AUTH',
             ClientId: clientId,
-            AuthParameters: { username, password }
+            AuthParameters: { USERNAME: username, PASSWORD: password }
         };
 
         const response = await cognito.send(new InitiateAuthCommand(input));
