@@ -8,7 +8,7 @@ export class ApiGatewayStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    /** Rest Api to communicate frontend with the backend */
+    /** Rest Api to communicate the frontend with the backend */
     const restApi = new apiGateway.RestApi(this, "CookieAuthRestApi", {
       deploy: true,
     });
@@ -16,24 +16,15 @@ export class ApiGatewayStack extends cdk.Stack {
     /** Cognito User Pool*/
     const userPool = new cognito.UserPool(this, 'CookieAuthUserPool', {
       selfSignUpEnabled: true,
-      passwordPolicy: {
-        minLength: 10,
-        requireLowercase: true,
-        requireUppercase: true,
-        requireDigits: true,
-        requireSymbols: true,
-        tempPasswordValidity: cdk.Duration.days(3),
-      },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
-    const userPoolId = userPool.userPoolId;
 
     /** A user pool client application that can interact with the user pool. */
     const userPoolClient = userPool.addClient('CookieAuthAppClient');
     const clientId = userPoolClient.userPoolClientId;
 
     /** This function will handle requests to a protected resource in the API Gateway. */
-    const protectedResourceLambdaFunction = new LambdaNodeFunction(this, 'ProtectedCookieAuthFunction', { entryFileName: 'protectedResource' });
+    const protectedResourceLambdaFunction = new LambdaNodeFunction(this, 'ProtectedCookieAuthFunction', { entryFileName: 'protectedLambda' });
 
     /** This function will handle sign up request to the Cognito User Pool */
     const signUp = new LambdaNodeFunction(this, 'CognitoSignUpLambdaFunction', {
