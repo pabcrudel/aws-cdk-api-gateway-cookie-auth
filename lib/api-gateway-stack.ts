@@ -17,12 +17,13 @@ export class ApiGatewayStack extends cdk.Stack {
     const userPool = new cognito.UserPool(this, 'CognitoAuthorizerUserPool', {
       selfSignUpEnabled: true,
       standardAttributes: { email: { required: true } },
+      autoVerify: { email: true },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
     /** A user pool client application that can interact with the user pool. */
     const userPoolClient = userPool.addClient('CognitoAuthorizerAppClient', {
-      authFlows: { userPassword: true },
+      authFlows: { userPassword: true, },
     });
     const clientId = userPoolClient.userPoolClientId;
 
