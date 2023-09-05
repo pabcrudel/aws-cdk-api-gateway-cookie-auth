@@ -24,7 +24,7 @@ export const signUp: RequestFunction = async (event) => {
 
         const { password, username, email } = JSON.parse(event.body);
 
-        if (typeof email === null) throw new utils.BadRequestError("An email must be provided");
+        if (email === null) throw new utils.BadRequestError("An email must be provided");
         if (!utils.validateEmail(email)) throw new utils.BadRequestError("The email is not valid");
 
         const input: SignUpCommandInput = {
