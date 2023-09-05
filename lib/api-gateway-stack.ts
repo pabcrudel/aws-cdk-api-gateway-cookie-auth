@@ -16,6 +16,7 @@ export class ApiGatewayStack extends cdk.Stack {
     /** Cognito User Pool*/
     const userPool = new cognito.UserPool(this, 'CookieAuthUserPool', {
       selfSignUpEnabled: true,
+      signInAliases: { email: true, username: true },
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
