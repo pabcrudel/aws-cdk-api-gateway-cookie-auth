@@ -49,12 +49,12 @@ export const confirmSignUp: RequestFunction = async (event) => {
     try {
         if (event.body === null) throw new utils.BadRequestError("Empty request body");
 
-        const { username, confirmationCode } = JSON.parse(event.body);
+        const { username, code } = JSON.parse(event.body);
 
         const input: ConfirmSignUpCommandInput = {
             ClientId: clientId,
             Username: username,
-            ConfirmationCode: confirmationCode,
+            ConfirmationCode: code,
         };
 
         const response = await cognito.send(new ConfirmSignUpCommand(input));
