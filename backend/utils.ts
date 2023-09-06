@@ -1,6 +1,6 @@
 import { APIGatewayProxyResult } from "aws-lambda";
 
-export class ApiError extends Error {
+class ApiError extends Error {
     statusCode: number;
 
     constructor(message: string, statusCode: number) {
@@ -25,18 +25,20 @@ export class ServerError extends ApiError {
     };
 };
 
-export class ApiResponse implements APIGatewayProxyResult {
+class ApiResponse implements APIGatewayProxyResult {
     readonly statusCode: number;
-    readonly headers = {
-        "content-type": "application/json",
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Origin': '*',
-    };
+    readonly headers: {[key: string]: string};
     readonly body: string;
 
-    constructor(statusCode: number, rawBody: any) {
+    constructor(statusCode: number, rawBody: any, additionalHeaders?: {[key: string]: string}) {
         this.statusCode = statusCode;
         this.body = JSON.stringify(rawBody);
+        this.headers = {
+            "content-type": "application/json",
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            ...additionalHeaders,
+        };
     };
 };
 export class ApiSuccessResponse extends ApiResponse {
