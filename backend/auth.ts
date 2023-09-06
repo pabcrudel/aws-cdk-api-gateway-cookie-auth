@@ -7,7 +7,8 @@ import {
     ConfirmSignUpCommand,
     ConfirmSignUpCommandInput,
     ResendConfirmationCodeCommand,
-    ResendConfirmationCodeCommandInput
+    ResendConfirmationCodeCommandInput,
+    UserNotConfirmedException
 } from '@aws-sdk/client-cognito-identity-provider';
 import { RequestFunction } from "./types";
 import {
@@ -114,6 +115,7 @@ export const signIn: RequestFunction = async (event) => {
         return new ApiSuccessResponse(authResult);
     }
     catch (error) {
-        return new ApiErrorResponse(error);
+        if (error instanceof UserNotConfirmedException) return new ApiSuccessResponse({ message: error.message });
+        else return new ApiErrorResponse(error);
     };
 };
