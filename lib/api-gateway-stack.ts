@@ -15,10 +15,10 @@ export class ApiGatewayStack extends cdk.Stack {
 
     /** API usage plan that limits the requests per minute, with an initial burst of requests */
     const usagePlan = restApi.addUsagePlan('CognitoAuthorizerUsagePlan', {
-        throttle: {
-            burstLimit: 20,  // burst requests before apply rateLimit
-            rateLimit: 100, // requests per minute
-        },
+      throttle: {
+        burstLimit: 20,  // burst requests before apply rateLimit
+        rateLimit: 100, // requests per minute
+      },
     });
     // Adds the usage plan to the deployment stage of the Api
     usagePlan.addApiStage({ stage: restApi.deploymentStage });
@@ -37,10 +37,18 @@ export class ApiGatewayStack extends cdk.Stack {
     });
     const clientId = userPoolClient.userPoolClientId;
 
+    /** Cognito User Pools authorizer for theses Api Resources */
+    const authorizer = new apiGateway.CognitoUserPoolsAuthorizer(this, 'ProtectedLambdaFunctionAuthorizer', {
+      cognitoUserPools: [userPool]
+    });
+
     /** This function will handle requests to a protected resource in the API Gateway. */
     const protectedLambdaFunction = new LambdaNodeFunction(this, 'ProtectedLambdaFunction', { entryFileName: 'protectedLambda' });
 
-    restApi.root.addMethod('GET', new apiGateway.LambdaIntegration(protectedLambdaFunction));
+    restApi.root.addMethod('GET', new apiGateway.LambdaIntegration(protectedLambdaFunction), {
+      authorizationType: apiGateway.AuthorizationType.COGNITO,
+      authorizer: authorizer
+    });
 
     const authApiResource = restApi.root.addResource('auth');
 
