@@ -45,11 +45,13 @@ export class ApiGatewayStack extends cdk.Stack {
     /** This function will handle requests to a protected resource in the API Gateway. */
     const protectedLambdaFunction = new LambdaNodeFunction(this, 'ProtectedLambdaFunction', { entryFileName: 'protectedLambda' });
 
+    // Protected api resource with Cognito Authorizer at the root path
     restApi.root.addMethod('GET', new apiGateway.LambdaIntegration(protectedLambdaFunction), {
       authorizationType: apiGateway.AuthorizationType.COGNITO,
       authorizer: authorizer
     });
 
+    /** API Resource to manage User Authentication */
     const authApiResource = restApi.root.addResource('auth');
 
     /** Common Lambda Function environment variables */
@@ -57,17 +59,17 @@ export class ApiGatewayStack extends cdk.Stack {
       USER_POOL_REGION: this.region,
       USER_POOL_CLIENT_ID: clientId,
     };
-
+    
+    // Actions that users made when are unauthenticated or new ones
     ['SignUp', 'ConfirmSignUp', 'ResendConfirmationCode', 'SignIn'].forEach(method => {
-      /** This function will handle `sign up`, `confirm sign up` and `sign in` request to the Cognito User Pool */
       const lambdaFunction = new LambdaNodeFunction(this, `Cognito${method}LambdaFunction`, {
         entryFileName: 'auth',
-        handler: method.replace(/^./, (match) => match.toLowerCase()), // = signUp, confirmSignUp, signIn
+        handler: method.replace(/^./, (match) => match.toLowerCase()), // = signUp, confirmSignUp
         environment: environment
       });
 
       authApiResource
-        .addResource(method.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()) // = sign-up, confirm-sign-up, sign-in
+        .addResource(method.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()) // = sign-up, confirm-sign-up
         .addMethod('POST', new apiGateway.LambdaIntegration(lambdaFunction));
     });
   };
