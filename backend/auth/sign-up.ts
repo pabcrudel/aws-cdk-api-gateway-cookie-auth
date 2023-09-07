@@ -1,7 +1,7 @@
 import { SignUpCommandInput, SignUpCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { RequestFunction } from "../types";
 import { BadRequestError, ApiSuccessResponse, ApiErrorResponse } from "../utils/api";
-import { bodyParser, validateEmail, clientId, cognitoClient } from "../utils/auth";
+import { bodyParser, validateEmail, clientId, cognitoClient, SuccessfulSignUp, UnconfirmedUser } from "../utils/auth";
 
 export const handler: RequestFunction = async (event) => {
     try {
@@ -14,14 +14,12 @@ export const handler: RequestFunction = async (event) => {
             ClientId: clientId,
             Username: username,
             Password: password,
-            UserAttributes: [
-                { Name: "email", Value: email },
-            ]
+            UserAttributes: [{ Name: "email", Value: email }]
         };
 
         const response = await cognitoClient.send(new SignUpCommand(input));
 
-        return new ApiSuccessResponse(response);
+        return new ApiSuccessResponse(new SuccessfulSignUp(new UnconfirmedUser(), response.CodeDeliveryDetails));
     }
     catch (error) {
         return new ApiErrorResponse(error);

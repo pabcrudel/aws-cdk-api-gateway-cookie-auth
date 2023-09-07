@@ -1,7 +1,7 @@
 import { InitiateAuthCommandInput, InitiateAuthCommand, UserNotConfirmedException } from "@aws-sdk/client-cognito-identity-provider";
 import { RequestFunction } from "../types";
 import { ServerError, ApiSuccessResponse, ApiErrorResponse } from "../utils/api";
-import { bodyParser, clientId, cognitoClient, ConfirmedUser, UnconfirmedUser } from "../utils/auth";
+import { bodyParser, clientId, cognitoClient, SuccessfulSignIn, ConfirmedUser, UnconfirmedUser } from "../utils/auth";
 
 export const handler: RequestFunction = async (event) => {
     try {
@@ -15,13 +15,10 @@ export const handler: RequestFunction = async (event) => {
 
         const response = await cognitoClient.send(new InitiateAuthCommand(input));
 
-        const authenticationResult = response.AuthenticationResult;
-        if (authenticationResult === undefined) throw new ServerError("The authentication result is empty");
-
-        return new ApiSuccessResponse(new ConfirmedUser(authenticationResult));
+        return new ApiSuccessResponse(new SuccessfulSignIn(new ConfirmedUser(response.AuthenticationResult)));
     }
     catch (error) {
-        if (error instanceof UserNotConfirmedException) return new ApiSuccessResponse(new UnconfirmedUser());
+        if (error instanceof UserNotConfirmedException) return new ApiSuccessResponse(new SuccessfulSignIn(new UnconfirmedUser()));
         else return new ApiErrorResponse(error);
     };
 };

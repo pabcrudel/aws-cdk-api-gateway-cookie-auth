@@ -1,5 +1,5 @@
-import { AuthenticationResultType, CognitoIdentityProviderClient } from "@aws-sdk/client-cognito-identity-provider";
-import { BadRequestError, ServerError } from "./api";
+import { AuthenticationResultType, CodeDeliveryDetailsType, CognitoIdentityProviderClient } from "@aws-sdk/client-cognito-identity-provider";
+import { ServerError, BadRequestError } from "./api";
 
 class CognitoUser {
     readonly isConfirmed: boolean;
@@ -11,14 +11,50 @@ class CognitoUser {
 export class ConfirmedUser extends CognitoUser {
     readonly authenticationResult: AuthenticationResultType;
 
-    constructor(authenticationResult: AuthenticationResultType) {
+    constructor(authenticationResult: AuthenticationResultType | undefined) {
         super(true);
-
+        
+        if (authenticationResult === undefined) throw new ServerError("The authentication result is empty");
         this.authenticationResult = authenticationResult;
     };
 };
 export class UnconfirmedUser extends CognitoUser {
     constructor() { super(false); };
+};
+
+export class SuccessfulCodeSubmission {
+    readonly message: string = 'Confirmation code has been sent';
+    readonly sentTo: string;
+
+    constructor(CodeDeliveryDetails: CodeDeliveryDetailsType | undefined) {
+        if (CodeDeliveryDetails === undefined || CodeDeliveryDetails.Destination === undefined)
+            throw new ServerError('Could not find where to send the confirmation code');
+
+        this.sentTo = CodeDeliveryDetails.Destination;
+    };
+};
+class SuccessfulUserAction {
+    readonly message: string;
+    readonly user: CognitoUser;
+
+    constructor(userAction: string, user: CognitoUser) {
+        this.message = `User ${userAction} successfully`;
+        this.user = user;
+    };
+};
+export class SuccessfulSignUp extends SuccessfulUserAction {
+    readonly confirmationCode: SuccessfulCodeSubmission;
+
+    constructor(user: CognitoUser, CodeDeliveryDetails: CodeDeliveryDetailsType | undefined) {
+        super('registered', user);
+
+        this.confirmationCode = new SuccessfulCodeSubmission(CodeDeliveryDetails);
+    };
+};
+export class SuccessfulSignIn extends SuccessfulUserAction {
+    constructor(user: CognitoUser) {
+        super('logged', user);
+    };
 };
 
 export const validateEmail = (email: string) => {
