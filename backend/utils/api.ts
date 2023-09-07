@@ -50,7 +50,7 @@ export class ApiErrorResponse extends ApiResponse {
     constructor(error: any) {
         super(
             error instanceof ApiError || error.statusCode !== undefined ? error.statusCode : 500,
-            { error: error instanceof Error ? error.message : "Unknown error occurred" },
+            { message: error instanceof Error ? error.message : "Unknown error occurred" },
         );
     };
 };
