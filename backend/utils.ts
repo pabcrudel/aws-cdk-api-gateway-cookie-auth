@@ -1,4 +1,4 @@
-import { AuthenticationResultType } from "@aws-sdk/client-cognito-identity-provider";
+import { AuthenticationResultType, CognitoIdentityProviderClient } from "@aws-sdk/client-cognito-identity-provider";
 import { APIGatewayProxyResult } from "aws-lambda";
 
 class ApiError extends Error {
@@ -81,3 +81,11 @@ export const validateEmail = (email: string) => {
 
     return validEmail.test(email);
 };
+
+const userPoolRegion = process.env.USER_POOL_REGION;
+if (userPoolRegion === undefined) throw new ServerError("Could not find the User Pool Region");
+
+export const clientId = process.env.USER_POOL_CLIENT_ID;
+if (clientId === undefined) throw new ServerError("Could not find the User Pool Client Id");
+
+export const cognitoClient = new CognitoIdentityProviderClient({ region: userPoolRegion });

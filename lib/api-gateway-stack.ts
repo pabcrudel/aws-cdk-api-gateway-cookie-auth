@@ -59,17 +59,19 @@ export class ApiGatewayStack extends cdk.Stack {
       USER_POOL_REGION: this.region,
       USER_POOL_CLIENT_ID: clientId,
     };
-    
+
     // Actions that users made when are unauthenticated or new ones
-    ['SignUp', 'ConfirmSignUp', 'ResendConfirmationCode', 'SignIn'].forEach(method => {
-      const lambdaFunction = new LambdaNodeFunction(this, `Cognito${method}LambdaFunction`, {
-        entryFileName: 'auth',
-        handler: method.replace(/^./, (match) => match.toLowerCase()), // = signUp, confirmSignUp
+    ['SignUp', 'ConfirmUser', 'ResendCode', 'SignIn'].forEach(action => {
+
+      const lowerCaseAction = action.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase(); // = sign-up, confirm-user
+
+      const lambdaFunction = new LambdaNodeFunction(this, `CognitoAuthorizer${action}LambdaFunction`, {
+        entryFileName: `auth/${lowerCaseAction}`,
         environment: environment
       });
 
       authApiResource
-        .addResource(method.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase()) // = sign-up, confirm-sign-up
+        .addResource(lowerCaseAction)
         .addMethod('POST', new apiGateway.LambdaIntegration(lambdaFunction));
     });
   };
