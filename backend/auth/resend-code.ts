@@ -1,6 +1,6 @@
 import { ResendConfirmationCodeCommandInput, ResendConfirmationCodeCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { RequestFunction } from "../types";
-import { ApiSuccessResponse, ApiErrorResponse } from "../utils/api";
+import { ServerError, ApiSuccessResponse, ApiErrorResponse } from "../utils/api";
 import { bodyParser, clientId, cognitoClient } from "../utils/auth";
 
 export const handler: RequestFunction = async (event) => {
@@ -14,7 +14,10 @@ export const handler: RequestFunction = async (event) => {
 
         const response = await cognitoClient.send(new ResendConfirmationCodeCommand(input));
 
-        return new ApiSuccessResponse(response);
+        if (response.CodeDeliveryDetails === undefined || response.CodeDeliveryDetails.Destination === undefined)
+            throw new ServerError('Could not find where to send the confirmation code');
+
+        return new ApiSuccessResponse({ message: 'A new confirmation code has been sent', destination: response.CodeDeliveryDetails.Destination });
     }
     catch (error) {
         return new ApiErrorResponse(error);
