@@ -13,9 +13,9 @@ export const handler: RequestFunction = async (event) => {
             ConfirmationCode: code,
         };
 
-        const response = await cognitoClient.send(new ConfirmSignUpCommand(input));
+        await cognitoClient.send(new ConfirmSignUpCommand(input));
 
-        return new ApiSuccessResponse(response);
+        return new ApiSuccessResponse({ message: "User confirmed" });
     }
     catch (error) {
         return new ApiErrorResponse(error);
