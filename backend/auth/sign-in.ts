@@ -1,6 +1,7 @@
 import { InitiateAuthCommandInput, InitiateAuthCommand, UserNotConfirmedException } from "@aws-sdk/client-cognito-identity-provider";
 import { RequestFunction } from "../types";
-import { BadRequestError, clientId, cognitoClient, ServerError, ApiSuccessResponse, ConfirmedUser, UnconfirmedUser, ApiErrorResponse } from "../utils";
+import { BadRequestError, ServerError, ApiSuccessResponse, ApiErrorResponse } from "../utils/api";
+import { clientId, cognitoClient, ConfirmedUser, UnconfirmedUser } from "../utils/auth";
 
 export const handler: RequestFunction = async (event) => {
     try {

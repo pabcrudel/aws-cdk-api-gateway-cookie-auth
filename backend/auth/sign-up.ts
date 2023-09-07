@@ -1,6 +1,7 @@
 import { SignUpCommandInput, SignUpCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { RequestFunction } from "../types";
-import { BadRequestError, validateEmail, clientId, cognitoClient, ApiSuccessResponse, ApiErrorResponse } from "../utils";
+import { BadRequestError, ApiSuccessResponse, ApiErrorResponse } from "../utils/api";
+import { validateEmail, clientId, cognitoClient } from "../utils/auth";
 
 export const handler: RequestFunction = async (event) => {
     try {
