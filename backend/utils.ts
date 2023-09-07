@@ -1,3 +1,4 @@
+import { AuthenticationResultType } from "@aws-sdk/client-cognito-identity-provider";
 import { APIGatewayProxyResult } from "aws-lambda";
 
 class ApiError extends Error {
@@ -27,10 +28,10 @@ export class ServerError extends ApiError {
 
 class ApiResponse implements APIGatewayProxyResult {
     readonly statusCode: number;
-    readonly headers: {[key: string]: string};
+    readonly headers: { [key: string]: string };
     readonly body: string;
 
-    constructor(statusCode: number, rawBody: any, additionalHeaders?: {[key: string]: string}) {
+    constructor(statusCode: number, rawBody: any, additionalHeaders?: { [key: string]: string }) {
         this.statusCode = statusCode;
         this.body = JSON.stringify(rawBody);
         this.headers = {
@@ -53,6 +54,26 @@ export class ApiErrorResponse extends ApiResponse {
             { error: error instanceof Error ? error.message : "Unknown error occurred" },
         );
     };
+};
+
+class CognitoUser {
+    readonly isConfirmed: boolean;
+
+    constructor(isConfirmed: boolean) {
+        this.isConfirmed = isConfirmed;
+    };
+};
+export class ConfirmedUser extends CognitoUser {
+    readonly authenticationResult: AuthenticationResultType;
+
+    constructor(authenticationResult: AuthenticationResultType) {
+        super(true);
+
+        this.authenticationResult = authenticationResult;
+    };
+};
+export class UnconfirmedUser extends CognitoUser {
+    constructor() { super(false); };
 };
 
 export const validateEmail = (email: string) => {

@@ -15,6 +15,8 @@ import {
     ApiErrorResponse,
     ApiSuccessResponse,
     BadRequestError,
+    ConfirmedUser,
+    UnconfirmedUser,
     ServerError,
     validateEmail
 } from "./utils";
@@ -109,13 +111,13 @@ export const signIn: RequestFunction = async (event) => {
 
         const response = await cognito.send(new InitiateAuthCommand(input));
 
-        const authResult = response.AuthenticationResult;
-        if (authResult === undefined) throw new ServerError("The authentication result is empty");
+        const authenticationResult = response.AuthenticationResult;
+        if (authenticationResult === undefined) throw new ServerError("The authentication result is empty");
 
-        return new ApiSuccessResponse(authResult);
+        return new ApiSuccessResponse(new ConfirmedUser(authenticationResult));
     }
     catch (error) {
-        if (error instanceof UserNotConfirmedException) return new ApiSuccessResponse({ message: error.message });
+        if (error instanceof UserNotConfirmedException) return new ApiSuccessResponse(new UnconfirmedUser());
         else return new ApiErrorResponse(error);
     };
 };
