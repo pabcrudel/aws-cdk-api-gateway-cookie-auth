@@ -1,13 +1,11 @@
 import { SignUpCommandInput, SignUpCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { RequestFunction } from "../types";
 import { BadRequestError, ApiSuccessResponse, ApiErrorResponse } from "../utils/api";
-import { validateEmail, clientId, cognitoClient } from "../utils/auth";
+import { bodyParser, validateEmail, clientId, cognitoClient } from "../utils/auth";
 
 export const handler: RequestFunction = async (event) => {
     try {
-        if (event.body === null) throw new BadRequestError("Empty request body");
-
-        const { password, username, email } = JSON.parse(event.body);
+        const { password, username, email } = bodyParser(event.body);
 
         if (email === null) throw new BadRequestError("An email must be provided");
         if (!validateEmail(email)) throw new BadRequestError("The email is not valid");

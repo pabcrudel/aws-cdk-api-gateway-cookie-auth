@@ -1,5 +1,5 @@
 import { AuthenticationResultType, CognitoIdentityProviderClient } from "@aws-sdk/client-cognito-identity-provider";
-import { ServerError } from "./api";
+import { BadRequestError, ServerError } from "./api";
 
 class CognitoUser {
     readonly isConfirmed: boolean;
@@ -25,6 +25,12 @@ export const validateEmail = (email: string) => {
     const validEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
     return validEmail.test(email);
+};
+
+export const bodyParser = (body: string | null) => {
+    if (body === null) throw new BadRequestError("Empty request body");
+
+    return JSON.parse(body);
 };
 
 const userPoolRegion = process.env.USER_POOL_REGION;

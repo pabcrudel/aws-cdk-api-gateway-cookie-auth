@@ -1,13 +1,11 @@
 import { InitiateAuthCommandInput, InitiateAuthCommand, UserNotConfirmedException } from "@aws-sdk/client-cognito-identity-provider";
 import { RequestFunction } from "../types";
-import { BadRequestError, ServerError, ApiSuccessResponse, ApiErrorResponse } from "../utils/api";
-import { clientId, cognitoClient, ConfirmedUser, UnconfirmedUser } from "../utils/auth";
+import { ServerError, ApiSuccessResponse, ApiErrorResponse } from "../utils/api";
+import { bodyParser, clientId, cognitoClient, ConfirmedUser, UnconfirmedUser } from "../utils/auth";
 
 export const handler: RequestFunction = async (event) => {
     try {
-        if (event.body === null) throw new BadRequestError("Empty request body");
-
-        const { password, username } = JSON.parse(event.body);
+        const { password, username } = bodyParser(event.body);
 
         const input: InitiateAuthCommandInput = {
             AuthFlow: 'USER_PASSWORD_AUTH',
