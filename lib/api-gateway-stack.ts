@@ -65,7 +65,7 @@ export class ApiGatewayStack extends cdk.Stack {
 
       const lowerCaseAction = action.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase(); // = sign-up, confirm-user
 
-      const lambdaFunction = new LambdaNodeFunction(this, `CognitoAuthorizer${action}LambdaFunction`, {
+      const lambdaFunction = new LambdaNodeFunction(this, `${action}LambdaFunction`, {
         entryFileName: `auth/${lowerCaseAction}`,
         environment: environment
       });
