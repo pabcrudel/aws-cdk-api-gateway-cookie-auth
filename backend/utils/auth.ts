@@ -42,12 +42,19 @@ export class SuccessfulCodeSubmission {
         this.sentTo = CodeDeliveryDetails.Destination;
     };
 };
-class SuccessfulUserAction {
+export class SuccessfulAction {
     readonly message: string;
+
+    constructor(userAction: string) {
+        this.message = `User ${userAction} successfully`;
+    };
+};
+class SuccessfulUserAction extends SuccessfulAction {
     readonly user: CognitoUser;
 
     constructor(userAction: string, user: CognitoUser) {
-        this.message = `User ${userAction} successfully`;
+        super(userAction);
+
         this.user = user;
     };
 };
