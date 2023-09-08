@@ -1,4 +1,4 @@
-import { AuthenticationResultType, CodeDeliveryDetailsType, CognitoIdentityProviderClient } from "@aws-sdk/client-cognito-identity-provider";
+import { AuthenticationResultType, CodeDeliveryDetailsType, InitiateAuthCommandInput, InitiateAuthCommand, CognitoIdentityProviderClient } from "@aws-sdk/client-cognito-identity-provider";
 import { ServerError, BadRequestError } from "./api";
 
 class CognitoUser {
@@ -76,6 +76,16 @@ export const bodyParser = (body: string | null) => {
     if (body === null) throw new BadRequestError("Empty request body");
 
     return JSON.parse(body);
+};
+
+export const initiateAuthFunction = async (authFlow: string, authParameters: Record<string, string>) => {
+    const input: InitiateAuthCommandInput = {
+        AuthFlow: authFlow,
+        ClientId: clientId,
+        AuthParameters: authParameters
+    };
+
+    return await cognitoClient.send(new InitiateAuthCommand(input));
 };
 
 const userPoolRegion = process.env.USER_POOL_REGION;

@@ -1,21 +1,15 @@
-import { InitiateAuthCommandInput, InitiateAuthCommand, UserNotConfirmedException } from "@aws-sdk/client-cognito-identity-provider";
+import { UserNotConfirmedException } from "@aws-sdk/client-cognito-identity-provider";
 import { RequestFunction } from "../types";
-import { ServerError, ApiSuccessResponse, ApiErrorResponse } from "../utils/api";
-import { bodyParser, clientId, cognitoClient, SuccessfulSignIn, ConfirmedUser, UnconfirmedUser } from "../utils/auth";
+import { ApiSuccessResponse, ApiErrorResponse } from "../utils/api";
+import { bodyParser, initiateAuthFunction, SuccessfulSignIn, ConfirmedUser, UnconfirmedUser } from "../utils/auth";
 
 export const handler: RequestFunction = async (event) => {
     try {
         const { password, username } = bodyParser(event.body);
 
-        const input: InitiateAuthCommandInput = {
-            AuthFlow: 'USER_PASSWORD_AUTH',
-            ClientId: clientId,
-            AuthParameters: { USERNAME: username, PASSWORD: password }
-        };
+        const { AuthenticationResult } = await initiateAuthFunction('USER_PASSWORD_AUTH', { USERNAME: username, PASSWORD: password });
 
-        const response = await cognitoClient.send(new InitiateAuthCommand(input));
-
-        return new ApiSuccessResponse(new SuccessfulSignIn(new ConfirmedUser(response.AuthenticationResult)));
+        return new ApiSuccessResponse(new SuccessfulSignIn(new ConfirmedUser(AuthenticationResult)));
     }
     catch (error) {
         if (error instanceof UserNotConfirmedException) return new ApiSuccessResponse(new SuccessfulSignIn(new UnconfirmedUser()));
