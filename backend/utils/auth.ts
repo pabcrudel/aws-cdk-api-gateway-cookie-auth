@@ -9,19 +9,28 @@ class CognitoUser {
     };
 };
 export class ConfirmedUser extends CognitoUser {
-    readonly authenticationResult: AuthenticationResultType;
+    readonly authenticationResponse: AuthenticationResponse;
 
     constructor(authenticationResult: AuthenticationResultType | undefined) {
         super(true);
-        
-        if (authenticationResult === undefined) throw new ServerError("The authentication result is empty");
-        this.authenticationResult = authenticationResult;
+
+        this.authenticationResponse = new AuthenticationResponse(authenticationResult);
     };
 };
 export class UnconfirmedUser extends CognitoUser {
     constructor() { super(false); };
 };
 
+export class AuthenticationResponse {
+    readonly message: string = 'Successfully generated tokens';
+    readonly authenticationResult: AuthenticationResultType;
+
+    constructor(authenticationResult: AuthenticationResultType | undefined) {
+        if (authenticationResult === undefined) throw new ServerError("The authentication result is empty");
+
+        this.authenticationResult = authenticationResult;
+    };
+};
 export class SuccessfulCodeSubmission {
     readonly message: string = 'Confirmation code has been sent';
     readonly sentTo: string;

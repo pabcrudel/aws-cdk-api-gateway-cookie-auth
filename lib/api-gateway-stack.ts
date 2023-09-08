@@ -61,7 +61,7 @@ export class ApiGatewayStack extends cdk.Stack {
     };
 
     // Actions that users made when are unauthenticated or new ones
-    ['SignUp', 'ConfirmUser', 'ResendCode', 'SignIn'].forEach(action => {
+    ['SignUp', 'ConfirmUser', 'ResendCode', 'SignIn', 'RefreshToken'].forEach(action => {
 
       const lowerCaseAction = action.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase(); // = sign-up, confirm-user
 
