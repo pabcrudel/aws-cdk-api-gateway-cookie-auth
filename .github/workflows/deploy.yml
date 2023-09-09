@@ -14,6 +14,12 @@ jobs:
         AWS_REGION: ${{ secrets.AWS_REGION }}
   
       steps:
+        - name: Get branch name
+          run: |
+            branch_fullname=${{ github.event.ref }}
+            branch_name=${branch_fullname#refs/heads/}
+            echo "BRANCH_NAME=$branch_name" >> $GITHUB_ENV
+
         - name: Checkout Repository
           uses: actions/checkout@v3
   
@@ -36,7 +42,7 @@ jobs:
         - name: Deploy CDK Rest Api Stack
           run: |
             cd backend
-            npx cdk deploy CognitoSecuredRestApi --require-approval never -O cdk-output.json
+            npx cdk deploy ${branch_name}-CognitoSecured-RestApi --require-approval never -O cdk-output.json
             echo "VITE_API_URL=$(cat cdk-output.json | grep -oP 'https://\S+execute-api\S+amazonaws\.com/prod/')" > ../frontend/.env
   
         - name: Build Frontend
@@ -47,5 +53,5 @@ jobs:
         - name: Deploy CDK Website Hosting & CDN Stack
           run: |
             cd backend
-            npx cdk deploy CognitoSecuredWebsiteDeployment --require-approval never
+            npx cdk deploy ${branch_name}-CognitoSecured-WebsiteDeployment --require-approval never
             
