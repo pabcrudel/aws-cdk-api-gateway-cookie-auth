@@ -35,7 +35,7 @@ export class WebsiteDeployment extends cdk.Stack {
             securityHeadersBehavior: {
                 contentSecurityPolicy: {
                     override: true,
-                    contentSecurityPolicy: "default-src https:;"
+                    contentSecurityPolicy: "default-src 'self' https:;"
                 },
                 strictTransportSecurity: {
                     override: true,
