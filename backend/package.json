@@ -1,8 +1,8 @@
 {
-  "name": "aws-cdk-api-gateway-cookie-auth",
+  "name": "aws-cdk-api-gateway-with-cognito-authorizer",
   "version": "0.1.0",
   "bin": {
-    "aws-cdk-api-gateway-cookie-auth": "bin/aws-cdk-api-gateway-cookie-auth.js"
+    "aws-cdk-api-gateway-cookie-auth": "bin/app.js"
   },
   "scripts": {
     "build": "tsc",
