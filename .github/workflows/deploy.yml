@@ -42,16 +42,17 @@ jobs:
         - name: Deploy CDK Rest Api Stack
           run: |
             cd backend
-            npx cdk deploy "$branch_name-CognitoSecured-RestApi" --require-approval never -O cdk-output.json
-            echo "VITE_API_URL=$(cat cdk-output.json | grep -oP 'https://\S+execute-api\S+amazonaws\.com/prod/')" > ../frontend/.env
+            echo "$branch_name-CognitoSecured-RestApi"
+        #     npx cdk deploy "$branch_name-CognitoSecured-RestApi" --require-approval never -O cdk-output.json
+        #     echo "VITE_API_URL=$(cat cdk-output.json | grep -oP 'https://\S+execute-api\S+amazonaws\.com/prod/')" > ../frontend/.env
   
-        - name: Build Frontend
-          run: |
-            cd frontend
-            npm run build
+        # - name: Build Frontend
+        #   run: |
+        #     cd frontend
+        #     npm run build
 
-        - name: Deploy CDK Website Hosting & CDN Stack
-          run: |
-            cd backend
-            npx cdk deploy "$branch_name-CognitoSecured-WebsiteDeployment" --require-approval never
+        # - name: Deploy CDK Website Hosting & CDN Stack
+        #   run: |
+        #     cd backend
+        #     npx cdk deploy "$branch_name-CognitoSecured-WebsiteDeployment" --require-approval never
             
