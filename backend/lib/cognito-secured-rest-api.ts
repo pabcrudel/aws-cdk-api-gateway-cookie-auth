@@ -9,12 +9,12 @@ export class CognitoSecuredRestApi extends cdk.Stack {
     super(scope, id, props);
 
     /** Rest Api to communicate the frontend with the backend */
-    const restApi = new apiGateway.RestApi(this, "CognitoAuthorizerRestApi", {
+    const restApi = new apiGateway.RestApi(this, "CognitoSecuredRestApi", {
       deploy: true,
     });
 
     /** API usage plan that limits the requests per minute, with an initial burst of requests */
-    const usagePlan = restApi.addUsagePlan('CognitoAuthorizerUsagePlan', {
+    const usagePlan = restApi.addUsagePlan('RestApiUsagePlan', {
       throttle: {
         burstLimit: 20,  // burst requests before apply rateLimit
         rateLimit: 100, // requests per minute
@@ -44,7 +44,7 @@ export class CognitoSecuredRestApi extends cdk.Stack {
     });
 
     /** This function will handle requests to a protected resource in the API Gateway. */
-    const protectedLambdaFunction = new LambdaNodeFunction(this, 'ProtectedLambdaFunction', { entryFileName: 'protectedLambda' });
+    const protectedLambdaFunction = new LambdaNodeFunction(this, 'ProtectedLambda', { entryFileName: 'protectedLambda' });
 
     // Protected api resource with Cognito Authorizer at the root path
     restApi.root.addMethod('GET', new apiGateway.LambdaIntegration(protectedLambdaFunction), {
@@ -63,7 +63,7 @@ export class CognitoSecuredRestApi extends cdk.Stack {
 
       const lowerCaseAction = action.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase(); // = sign-up, confirm-user
 
-      const lambdaFunction = new LambdaNodeFunction(this, `${action}LambdaFunction`, {
+      const lambdaFunction = new LambdaNodeFunction(this, action, {
         entryFileName: `auth/${lowerCaseAction}`,
         environment: environment
       });
