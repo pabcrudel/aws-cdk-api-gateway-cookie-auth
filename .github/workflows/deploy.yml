@@ -53,5 +53,5 @@ jobs:
         - name: Deploy CDK Website Hosting & CDN Stack
           run: |
             cd backend
-            npx cdk deploy "$BRANCH_NAME-CognitoSecured-RestApi" --require-approval never
+            npx cdk deploy "$BRANCH_NAME-CognitoSecured-WebsiteDeployment" --require-approval never
             
