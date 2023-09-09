@@ -42,7 +42,7 @@ jobs:
         - name: Deploy CDK Rest Api Stack
           run: |
             cd backend
-            echo "$secrets.BRANCH_NAME-CognitoSecured-RestApi"
+            echo "$BRANCH_NAME-CognitoSecured-RestApi"
         #     npx cdk deploy "$branch_name-CognitoSecured-RestApi" --require-approval never -O cdk-output.json
         #     echo "VITE_API_URL=$(cat cdk-output.json | grep -oP 'https://\S+execute-api\S+amazonaws\.com/prod/')" > ../frontend/.env
   
