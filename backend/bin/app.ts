@@ -6,4 +6,4 @@ import { WebsiteDeployment } from '../lib/website-deployment';
 
 const app = new cdk.App();
 new CognitoSecuredRestApi(app, 'CognitoSecuredRestApi');
-new WebsiteDeployment(app, 'CognitoSecuredWebsite');
+new WebsiteDeployment(app, 'CognitoSecuredWebsiteDeployment');
