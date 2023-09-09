@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { ApiGatewayStack } from '../lib/api-gateway-stack';
+import { CognitoSecuredRestApi } from '../lib/cognito-secured-rest-api';
+import { WebsiteDeployment } from '../lib/website-deployment';
 
 const app = new cdk.App();
-new ApiGatewayStack(app, 'ApiGatewayWithCognitoAuthorizerStack');
+new CognitoSecuredRestApi(app, 'CognitoSecuredRestApi');
+new WebsiteDeployment(app, 'CognitoSecuredWebsite');

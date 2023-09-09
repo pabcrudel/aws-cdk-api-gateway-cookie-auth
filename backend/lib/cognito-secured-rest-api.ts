@@ -2,9 +2,9 @@ import * as cdk from 'aws-cdk-lib';
 import * as apiGateway from 'aws-cdk-lib/aws-apigateway';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { Construct } from 'constructs';
-import { LambdaNodeFunction } from './constructs/lambda-node-function';
+import { LambdaNodeFunction } from './utils/lambda-node-function';
 
-export class ApiGatewayStack extends cdk.Stack {
+export class CognitoSecuredRestApi extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -55,10 +55,7 @@ export class ApiGatewayStack extends cdk.Stack {
     const authApiResource = restApi.root.addResource('auth');
 
     /** Common Lambda Function environment variables */
-    const environment = {
-      USER_POOL_REGION: this.region,
-      USER_POOL_CLIENT_ID: clientId,
-    };
+    const environment = { USER_POOL_REGION: this.region, USER_POOL_CLIENT_ID: clientId };
 
     // Actions that users made when are unauthenticated or new ones
     ['SignUp', 'ConfirmUser', 'ResendCode', 'SignIn', 'RefreshToken', 'SignOut'].forEach(action => {
