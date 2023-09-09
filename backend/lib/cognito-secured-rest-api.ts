@@ -34,6 +34,7 @@ export class CognitoSecuredRestApi extends cdk.Stack {
     /** A user pool client application that can interact with the user pool. */
     const userPoolClient = userPool.addClient('CognitoAuthorizerAppClient', {
       authFlows: { userPassword: true, },
+      refreshTokenValidity: cdk.Duration.days(1),
     });
     const clientId = userPoolClient.userPoolClientId;
 
